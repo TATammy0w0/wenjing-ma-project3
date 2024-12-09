@@ -27,13 +27,13 @@ const SignUpPage = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen px-20">
-      <div className="flex-1 hidden lg:flex items-center  justify-center pr-10">
+      <div className="flex-1 hidden lg:flex items-center  justify-center pr-20">
         <Link to="/">
           <YSvg className=" lg:w-3/4 fill-white" />
         </Link>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center items-center pl-10">
+      <div className="flex-1 flex flex-col justify-center items-center">
         <div className="flex w-full flex-col border-opacity-50">
           <form className="flex gap-4 flex-col" onSubmit={handleSubmit}>
             <Link to="/">
