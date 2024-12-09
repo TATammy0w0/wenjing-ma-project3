@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
 export const signup = async (req, res) => {
-  const MIN_PASSWORD_LENGTH = 8;
+  const MIN_PASSWORD_LENGTH = process.env.MIN_PASSWORD_LENGTH;
 
   try {
     const { username, email, password } = req.body;

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minLength: 8,
+      minLength: process.env.MIN_PASSWORD_LENGTH,
     },
 
     followers: [
