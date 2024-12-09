@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import YSvg from "../../../components/svgs/Y";
 
-import { MdOutlineMail } from "react-icons/md";
+import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 
 const LoginPage = () => {
@@ -37,7 +37,7 @@ const LoginPage = () => {
               {"Let's"} go.
             </h1>
             <label className="input input-bordered rounded flex items-center gap-2">
-              <MdOutlineMail />
+              <FaUser />
               <input
                 type="text"
                 className="grow"
@@ -71,7 +71,7 @@ const LoginPage = () => {
             <p className="text-white text-lg">{"Don't"} have an account?</p>
             <Link to="/signup">
               <button className="btn rounded-full btn-primary text-white btn-outline w-full">
-                Sign up
+                Create Account
               </button>
             </Link>
           </div>

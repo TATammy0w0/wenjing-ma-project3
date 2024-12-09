@@ -6,7 +6,6 @@ import YSvg from "../../../components/svgs/Y";
 import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
-import { MdDriveFileRenameOutline } from "react-icons/md";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -66,7 +65,7 @@ const SignUpPage = () => {
               <input
                 type="password"
                 className="grow"
-                placeholder="password"
+                placeholder="new password"
                 name="password"
                 onChange={handleInputChange}
                 value={formData.password}
