@@ -35,14 +35,14 @@ const SignUpPage = () => {
       <div className="flex-1 flex flex-col justify-center items-center pl-10">
         <div className="flex w-full flex-col border-opacity-50">
           <form className="flex gap-4 flex-col" onSubmit={handleSubmit}>
-            <YSvg className="w-24 lg:hidden fill-white" />
+            <YSvg className="w-16 lg:hidden fill-white" />
             <h1 className="text-4xl font-extrabold text-white">Join today.</h1>
             <label className="input input-bordered rounded flex items-center gap-2">
               <MdOutlineMail />
               <input
                 type="email"
                 className="grow"
-                placeholder="Email"
+                placeholder="email"
                 name="email"
                 onChange={handleInputChange}
                 value={formData.email}
@@ -54,7 +54,7 @@ const SignUpPage = () => {
                 <input
                   type="text"
                   className="grow "
-                  placeholder="Username"
+                  placeholder="username"
                   name="username"
                   onChange={handleInputChange}
                   value={formData.username}
@@ -66,7 +66,7 @@ const SignUpPage = () => {
               <input
                 type="password"
                 className="grow"
-                placeholder="Password"
+                placeholder="password"
                 name="password"
                 onChange={handleInputChange}
                 value={formData.password}
