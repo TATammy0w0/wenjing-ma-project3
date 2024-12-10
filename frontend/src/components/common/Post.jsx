@@ -17,7 +17,7 @@ const Post = ({ post }) => {
   const queryClient = useQueryClient();
   const postOwner = post.user;
   const isLiked = false;
-  const isMyPost = !authUser || authUser._id === post.user._id;
+  const isMyPost = authUser && authUser._id === post.user._id;
   const formattedDate = "1h";
 
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
