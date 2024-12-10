@@ -8,20 +8,29 @@ export const signup = async (req, res) => {
   try {
     const { fullName, username, email, password } = req.body;
 
+    // check username format
+    const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!username || !usernameRegex.test(username.trim())) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Invalid username format. Username must be non-empty and contain only alphanumeric characters, '-', or '_'.",
+        });
+    }
     // check if the given username is taken
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: "Username is already taken." });
     }
-
-    if (!fullName) {
-      return res.status(400).json({ error: "Full name cannot be empty." });
-    }
-
     // check email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format." });
+    }
+
+    if (!fullName) {
+      return res.status(400).json({ error: "Full name cannot be empty." });
     }
 
     // validate password length restriction

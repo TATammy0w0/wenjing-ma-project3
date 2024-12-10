@@ -7,7 +7,9 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -17,29 +19,33 @@ const SignUpPage = () => {
     password: "",
   });
 
+  const queryClient = useQueryClient();
+
   // get data from backend
   const { mutate, isError, isPending, error } = useMutation({
     mutationFn: async ({ email, username, fullName, password }) => {
       try {
         const res = await fetch("/api/auth/signup", {
-          metho: "POST",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ email, username, fullName, password }),
         });
-        if (!res.ok) {
-          throw new Error("Something went wrong.");
-        }
+
         const data = await res.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
+        if (!res.ok) throw new Error(data.error || "Failed to create account");
         console.log(data);
         return data;
       } catch (error) {
+        console.error(error);
         toast.error(error.message);
+        throw error;
       }
+    },
+    onSuccess: () => {
+      toast.success("Account created successfully");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 
@@ -116,9 +122,10 @@ const SignUpPage = () => {
             </label>
 
             <button className="btn rounded-full btn-primary text-white w-full">
-              Create Account
+              {isPending ? "Loading..." : "Create Account"}
             </button>
-            {isError && <p className="text-red-500">Something went wrong</p>}
+            {/* Use react hot toast to handle error message instead. */}
+            {/* {isError && <p className="text-red-500">{error.message}</p>} */}
           </form>
 
           <div className="divider">or</div>
