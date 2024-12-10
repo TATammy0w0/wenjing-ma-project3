@@ -9,6 +9,8 @@ import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
+import LoadingSpinner from "./LoadingSpinner";
+
 const Post = ({ post }) => {
   //const [comment, setComment] = useState("");
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
@@ -31,7 +33,8 @@ const Post = ({ post }) => {
         }
         return data;
       } catch (error) {
-        throw new Error(error);
+        toast.error(error.message);
+        throw error;
       }
     },
     onSuccess: () => {
@@ -78,27 +81,25 @@ const Post = ({ post }) => {
             {isMyPost && (
               <span className="flex justify-end flex-1">
                 {/* Option to delete or update */}
-                <div className="dropdown dropdown-bottom dropdown-end">
-                  <div tabIndex={0} role="button" className="m-1">
-                    <SlOptions />
+                {!isDeleting && (
+                  <div className="dropdown dropdown-bottom dropdown-end">
+                    <div tabIndex={0} role="button" className="m-1">
+                      <SlOptions />
+                    </div>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content menu bg-base-100 rounded-box z-[1] w-30 p-2 shadow"
+                    >
+                      <li>
+                        <a>Edit</a>
+                      </li>
+                      <li>
+                        <a onClick={handleDeletePost}>Delete</a>
+                      </li>
+                    </ul>
                   </div>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu bg-base-100 rounded-box z-[1] w-30 p-2 shadow"
-                  >
-                    <li>
-                      <a>Edit</a>
-                    </li>
-                    <li>
-                      <a onClick={handleDeletePost}>Delete</a>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* <FaTrash
-                  className="cursor-pointer hover:text-red-500"
-                  onClick={handleDeletePost}
-                /> */}
+                )}
+                {isDeleting && <LoadingSpinner size="sm" />}
               </span>
             )}
           </div>
