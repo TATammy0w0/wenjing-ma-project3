@@ -3,17 +3,46 @@ import { BiRepost } from "react-icons/bi";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
-import { useState } from "react";
+import { SlOptions } from "react-icons/sl";
+//import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 const Post = ({ post }) => {
   //const [comment, setComment] = useState("");
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const queryClient = useQueryClient();
   const postOwner = post.user;
   const isLiked = false;
-  const isMyPost = true;
+  const isMyPost = authUser._id === post.user._id;
   const formattedDate = "1h";
 
-  const handleDeletePost = () => {};
+  const { mutate: deletePost, isPending: isDeleting } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch(`/api/posts/${post._id}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+        return data;
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+    onSuccess: () => {
+      toast.success("Post deleted successfully.");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
+  const handleDeletePost = () => {
+    deletePost();
+  };
 
   //const isCommenting = false;
 
@@ -48,10 +77,28 @@ const Post = ({ post }) => {
             </span>
             {isMyPost && (
               <span className="flex justify-end flex-1">
-                <FaTrash
+                {/* Option to delete or update */}
+                <div className="dropdown dropdown-bottom dropdown-end">
+                  <div tabIndex={0} role="button" className="m-1">
+                    <SlOptions />
+                  </div>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu bg-base-100 rounded-box z-[1] w-30 p-2 shadow"
+                  >
+                    <li>
+                      <a>Edit</a>
+                    </li>
+                    <li>
+                      <a onClick={handleDeletePost}>Delete</a>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* <FaTrash
                   className="cursor-pointer hover:text-red-500"
                   onClick={handleDeletePost}
-                />
+                /> */}
               </span>
             )}
           </div>
