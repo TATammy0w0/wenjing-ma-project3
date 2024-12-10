@@ -7,7 +7,6 @@ import { FaSearch } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 
 const NavBar = () => {
-  //const authUser = undefined;
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   return (
