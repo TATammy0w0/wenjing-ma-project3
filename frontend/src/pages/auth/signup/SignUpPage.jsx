@@ -6,28 +6,55 @@ import YSvg from "../../../components/svgs/Y";
 import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
+import { MdDriveFileRenameOutline } from "react-icons/md";
+import { useMutation } from "@tanstack/react-query";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
     email: "",
     username: "",
+    fullName: "",
     password: "",
+  });
+
+  // get data from backend
+  const { mutate, isError, isPending, error } = useMutation({
+    mutationFn: async ({ email, username, fullName, password }) => {
+      try {
+        const res = await fetch("/api/auth/signup", {
+          metho: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, username, fullName, password }),
+        });
+        if (!res.ok) {
+          throw new Error("Something went wrong.");
+        }
+        const data = await res.json();
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        console.log(data);
+        return data;
+      } catch (error) {
+        toast.error(error.message);
+      }
+    },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    mutate(formData);
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const isError = false;
-
   return (
-    <div className="mx-auto flex h-screen">
-      <div className="flex-1 hidden lg:flex items-center  justify-center pr-20">
+    <div className="mx-auto flex h-screen px-20 gap-16">
+      <div className="flex-1 hidden lg:flex items-center justify-center">
         <Link to="/">
           <YSvg className=" lg:w-3/4 fill-white" />
         </Link>
@@ -51,19 +78,31 @@ const SignUpPage = () => {
                 value={formData.email}
               />
             </label>
-            <div className="flex gap-4 flex-wrap">
-              <label className="input input-bordered rounded flex items-center gap-2 flex-1">
-                <FaUser />
-                <input
-                  type="text"
-                  className="grow "
-                  placeholder="username"
-                  name="username"
-                  onChange={handleInputChange}
-                  value={formData.username}
-                />
-              </label>
-            </div>
+
+            <label className="input input-bordered rounded flex items-center gap-2">
+              <MdDriveFileRenameOutline />
+              <input
+                type="text"
+                className="grow"
+                placeholder="full name"
+                name="fullName"
+                onChange={handleInputChange}
+                value={formData.fullName}
+              />
+            </label>
+
+            <label className="input input-bordered rounded flex items-center gap-2">
+              <FaUser />
+              <input
+                type="text"
+                className="grow "
+                placeholder="username"
+                name="username"
+                onChange={handleInputChange}
+                value={formData.username}
+              />
+            </label>
+
             <label className="input input-bordered rounded flex items-center gap-2">
               <MdPassword />
               <input
@@ -75,6 +114,7 @@ const SignUpPage = () => {
                 value={formData.password}
               />
             </label>
+
             <button className="btn rounded-full btn-primary text-white w-full">
               Create Account
             </button>

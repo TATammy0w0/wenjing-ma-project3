@@ -24,8 +24,8 @@ const LoginPage = () => {
   const isError = false;
 
   return (
-    <div className="mx-auto flex h-screen">
-      <div className="flex-1 hidden lg:flex items-center  justify-center pr-20">
+    <div className="mx-auto flex h-screen px-20 gap-16">
+      <div className="flex-1 hidden lg:flex items-center justify-center">
         <Link to="/">
           <YSvg className=" lg:w-3/4 fill-white" />
         </Link>
@@ -63,6 +63,7 @@ const LoginPage = () => {
                 value={formData.password}
               />
             </label>
+
             <button className="btn rounded-full btn-primary text-white">
               Login
             </button>
