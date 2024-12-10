@@ -6,12 +6,16 @@ export const signup = async (req, res) => {
   const MIN_PASSWORD_LENGTH = process.env.MIN_PASSWORD_LENGTH;
 
   try {
-    const { username, email, password } = req.body;
+    const { fullName, username, email, password } = req.body;
 
     // check if the given username is taken
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: "Username is already taken." });
+    }
+
+    if (!fullName) {
+      return res.status(400).json({ error: "Full name cannot be empty." });
     }
 
     // check email format
@@ -33,6 +37,7 @@ export const signup = async (req, res) => {
 
     const newUser = new User({
       username: username,
+      fullName: fullName,
       email: email,
       password: hashedPassword,
     });
@@ -45,6 +50,7 @@ export const signup = async (req, res) => {
       res.status(201).json({
         _id: newUser._id,
         username: newUser.username,
+        fullName: newUser.fullName,
         email: newUser.email,
         followers: newUser.followers,
         following: newUser.following,

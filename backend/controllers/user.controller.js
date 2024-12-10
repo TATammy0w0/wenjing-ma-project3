@@ -92,7 +92,8 @@ export const getUserProfile = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const MIN_PASSWORD_LENGTH = process.env.MIN_PASSWORD_LENGTH;
-  const { username, email, currentPassword, newPassword, bio } = req.body;
+  const { username, fullName, email, currentPassword, newPassword, bio } =
+    req.body;
   let { profileImg, coverImg } = req.body;
 
   const userId = req.user._id;
@@ -162,6 +163,7 @@ export const updateUser = async (req, res) => {
     }
 
     user.username = username || user.username;
+    user.fullName = fullName || user.fullName;
     user.email = email || user.email;
     user.bio = bio || user.bio;
     user.profileImg = profileImg || user.profileImg;
