@@ -49,7 +49,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <div className="flex-[4_4_0]  border-r border-gray-700 min-h-screen ">
+      <div>
         {/* HEADER */}
         {isLoading && <ProfileHeaderSkeleton />}
         {!isLoading && !user && (

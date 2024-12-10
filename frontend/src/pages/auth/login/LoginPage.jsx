@@ -24,7 +24,7 @@ const LoginPage = () => {
   const isError = false;
 
   return (
-    <div className="max-w-screen-xl mx-auto flex h-screen">
+    <div className="mx-auto flex h-screen">
       <div className="flex-1 hidden lg:flex items-center  justify-center pr-20">
         <Link to="/">
           <YSvg className=" lg:w-3/4 fill-white" />

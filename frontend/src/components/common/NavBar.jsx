@@ -14,7 +14,7 @@ const NavBar = () => {
   };
 
   return (
-    <div className="navbar bg-base-100 sticky top-0 flex border-r border-gray-700 z-10">
+    <div className="navbar bg-base-100 sticky top-0 flex border-b border-gray-700 z-10">
       <div className="flex-1">
         <Link to="/" className="flex justify-center md:justify-start">
           <YSvg className="px-2 w-12 h-12 rounded-full fill-white hover:bg-stone-900" />
