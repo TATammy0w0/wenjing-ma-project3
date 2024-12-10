@@ -4,14 +4,11 @@ import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 
 import { FaSearch } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
 
 const NavBar = () => {
-  //const data = undefined;
-  const data = {
-    fullName: "John Doe",
-    username: "johndoe",
-    profileImg: "/avatars/boy1.jpg",
-  };
+  //const authUser = undefined;
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   return (
     <div className="navbar bg-base-100 sticky top-0 flex border-b border-gray-700 z-10">
@@ -61,22 +58,22 @@ const NavBar = () => {
         </div> */}
 
         {/* Show user profile when user logged in */}
-        {data && (
+        {authUser && (
           <Link
-            to={`/profile/${data.username}`}
+            to={`/profile/${authUser.username}`}
             className="flex gap-2 items-start transition-all duration-300 hover:bg-[#181818] py-2 px-4 rounded-full"
           >
             <div className="avatar">
               <div className="w-8 rounded-full">
-                <img src={data?.profileImg || "/avatar-placeholder.png"} />
+                <img src={authUser?.profileImg || "/avatar-placeholder.png"} />
               </div>
             </div>
             <div className="flex justify-between flex-1">
               <div className="hidden md:block">
                 <p className="text-white font-bold text-sm w-20 truncate">
-                  {data?.fullName}
+                  {authUser?.fullName}
                 </p>
-                <p className="text-slate-500 text-sm">@{data?.username}</p>
+                <p className="text-slate-500 text-sm">@{authUser?.username}</p>
               </div>
               {/* <BiLogOut className="w-5 h-5 cursor-pointer" /> */}
             </div>
@@ -84,11 +81,11 @@ const NavBar = () => {
         )}
 
         {/* Show log in and sign up buttons when user not logged in */}
-        {!data && (
+        {!authUser && (
           <div className="flex gap-2">
             <Link to="/login">
               <button className="btn rounded-full btn-primary text-white btn-outline w-full">
-                Login
+                Log in
               </button>
             </Link>
             <Link to="/signup">

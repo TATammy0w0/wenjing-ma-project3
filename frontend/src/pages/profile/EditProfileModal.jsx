@@ -1,4 +1,9 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { BiLogOut } from "react-icons/bi";
+
+import toast from "react-hot-toast";
 
 const EditProfileModal = () => {
   const [formData, setFormData] = useState({
@@ -11,12 +16,43 @@ const EditProfileModal = () => {
     currentPassword: "",
   });
 
+  const queryClient = useQueryClient();
+
+  // make api call to backend to log in user
+  const {
+    mutate: logoutMutation,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch("/api/auth/logout", {
+          method: "POST",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(error.message);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Logout successful.");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
+  });
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <>
+    <div className="flex gap-2">
       <button
         className="btn btn-outline rounded-full btn-sm"
         onClick={() =>
@@ -105,7 +141,16 @@ const EditProfileModal = () => {
           <button className="outline-none">close</button>
         </form>
       </dialog>
-    </>
+      {/* Log out button - TODO */}
+      <button
+        className="btn btn-outline rounded-full btn-sm btn-error"
+        onClick={() => {
+          logoutMutation();
+        }}
+      >
+        <BiLogOut className="w-5 h-5 cursor-pointer" />
+      </button>
+    </div>
   );
 };
 export default EditProfileModal;
