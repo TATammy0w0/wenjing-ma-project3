@@ -7,23 +7,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Post = ({ post }) => {
-  const [comment, setComment] = useState("");
+  //const [comment, setComment] = useState("");
   const postOwner = post.user;
   const isLiked = false;
-
   const isMyPost = true;
-
   const formattedDate = "1h";
-
-  const isCommenting = false;
 
   const handleDeletePost = () => {};
 
-  const handlePostComment = (e) => {
-    e.preventDefault();
-  };
+  //const isCommenting = false;
 
-  const handleLikePost = () => {};
+  // const handlePostComment = (e) => {
+  //   e.preventDefault();
+  // };
+
+  //const handleLikePost = () => {};
 
   return (
     <>
@@ -63,27 +61,29 @@ const Post = ({ post }) => {
               <img
                 src={post.img}
                 className="h-80 object-contain rounded-lg border border-gray-700"
-                alt=""
+                alt="Image user uploaded for this post"
               />
             )}
           </div>
           <div className="flex justify-between mt-3">
             <div className="flex gap-4 items-center w-2/3 justify-between">
+              {/* Comment post */}
               <div
                 className="flex gap-1 items-center cursor-pointer group"
-                onClick={() =>
-                  document
-                    .getElementById("comments_modal" + post._id)
-                    .showModal()
-                }
+                // onClick={() =>
+                //   document
+                //     .getElementById("comments_modal" + post._id)
+                //     .showModal()
+                // }
               >
                 <FaRegComment className="w-4 h-4  text-slate-500 group-hover:text-sky-400" />
                 <span className="text-sm text-slate-500 group-hover:text-sky-400">
-                  {post.comments.length}
+                  0
                 </span>
               </div>
-              {/* We're using Modal Component from DaisyUI */}
-              <dialog
+
+              {/* Comment Post with Modal Component from DaisyUI */}
+              {/* <dialog
                 id={`comments_modal${post._id}`}
                 className="modal border-none outline-none"
               >
@@ -143,7 +143,9 @@ const Post = ({ post }) => {
                 <form method="dialog" className="modal-backdrop">
                   <button className="outline-none">close</button>
                 </form>
-              </dialog>
+              </dialog> */}
+
+              {/* Repost post */}
               <div className="flex gap-1 items-center group cursor-pointer">
                 <BiRepost className="w-6 h-6  text-slate-500 group-hover:text-green-500" />
                 <span className="text-sm text-slate-500 group-hover:text-green-500">
@@ -154,7 +156,7 @@ const Post = ({ post }) => {
               {/* Like post */}
               <div
                 className="flex gap-1 items-center group cursor-pointer"
-                onClick={handleLikePost}
+                // onClick={handleLikePost}
               >
                 {!isLiked && (
                   <FaRegHeart className="w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500" />
@@ -168,7 +170,7 @@ const Post = ({ post }) => {
                     isLiked ? "text-pink-500" : ""
                   }`}
                 >
-                  {post.likes.length}
+                  0
                 </span>
               </div>
             </div>

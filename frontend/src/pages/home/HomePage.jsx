@@ -5,8 +5,10 @@ import Posts from "../../components/common/Posts";
 const HomePage = () => {
   return (
     <>
-      <CreatePost />
-      <Posts />
+      <div className="flex flex-col">
+        <CreatePost />
+        <Posts />
+      </div>
     </>
   );
 };
