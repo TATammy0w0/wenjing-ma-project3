@@ -3,8 +3,20 @@ import PostSkeleton from "../skeletons/PostSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-const Posts = () => {
-  const POST_ENDPOINT = "api/posts/all";
+const Posts = ({ feedType, username }) => {
+  const getPostEndPoint = () => {
+    switch (feedType) {
+      case "all":
+        return "api/posts/all";
+      case "user":
+        return `api/posts/user/${username}`;
+      default:
+        return "api/posts/all";
+    }
+  };
+
+  const POST_ENDPOINT = getPostEndPoint();
+  console.log(`POST_ENDPOINT: ${POST_ENDPOINT}`);
 
   const {
     data: posts,
@@ -32,13 +44,12 @@ const Posts = () => {
   // load posts
   useEffect(() => {
     refetch();
-  }, [refetch]);
+  }, [feedType, refetch, username]);
 
   return (
     <>
       {(isLoading || isRefetching) && (
         <div className="flex flex-col justify-center">
-          <PostSkeleton />
           <PostSkeleton />
           <PostSkeleton />
         </div>
