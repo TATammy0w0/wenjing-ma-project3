@@ -21,8 +21,13 @@ const SignUpPage = () => {
 
   const queryClient = useQueryClient();
 
-  // get data from backend
-  const { mutate, isError, isPending, error } = useMutation({
+  // make api call to backend to create user
+  const {
+    mutate: signupMutation,
+    isError,
+    isPending,
+    error,
+  } = useMutation({
     mutationFn: async ({ email, username, fullName, password }) => {
       try {
         const res = await fetch("/api/auth/signup", {
@@ -51,7 +56,7 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    mutate(formData);
+    signupMutation(formData);
   };
 
   const handleInputChange = (e) => {
@@ -134,7 +139,7 @@ const SignUpPage = () => {
             <p className="text-white text-lg">Already have an account?</p>
             <Link to="/login">
               <button className="btn rounded-full btn-primary text-white btn-outline w-full">
-                Sign in
+                Log in
               </button>
             </Link>
           </div>

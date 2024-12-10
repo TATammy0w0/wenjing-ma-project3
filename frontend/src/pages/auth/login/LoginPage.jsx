@@ -5,6 +5,9 @@ import YSvg from "../../../components/svgs/Y";
 
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -12,16 +15,50 @@ const LoginPage = () => {
     password: "",
   });
 
+  const queryClient = useQueryClient();
+
+  // make api call to backend to log in user
+  const {
+    mutate: loginMutation,
+    isError,
+    isPending,
+    error,
+  } = useMutation({
+    mutationFn: async ({ username, password }) => {
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(error.message);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      // refetch the authUser
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    loginMutation(formData);
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const isError = false;
 
   return (
     <div className="mx-auto flex h-screen px-20 gap-16">
@@ -65,9 +102,10 @@ const LoginPage = () => {
             </label>
 
             <button className="btn rounded-full btn-primary text-white">
-              Login
+              {isPending ? "Loading..." : "Log in"}
             </button>
-            {isError && <p className="text-red-500">Something went wrong</p>}
+            {/* Use react hot toast to handle error message instead. */}
+            {/* {isError && <p className="text-red-500">Something went wrong</p>} */}
           </form>
 
           <div className="divider">or</div>
