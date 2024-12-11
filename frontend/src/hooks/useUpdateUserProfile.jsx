@@ -36,9 +36,6 @@ const useUpdateUserProfile = () => {
           queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
         ]);
       },
-      // onError: (error) => {
-      //   toast.error(error);
-      // },
     });
 
   return { updateProfile, isUpdatingProfile };
