@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
@@ -10,9 +11,10 @@ import EditProfileModal from "./EditProfileModal";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
+import { BiLogOut } from "react-icons/bi";
 
 import { formatMemberSinceDate } from "../../utils/date";
-//import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 //import { POSTS } from "../../utils/db/dummy"; // placeholder datas to test out functionalities
 
@@ -49,8 +51,38 @@ const ProfilePage = () => {
     },
   });
 
+  const { isUpdatingProfile, updateProfile } = useUpdateUserProfile();
   const isMyProfile = authUser?._id === user?._id;
   const memberSinceDate = formatMemberSinceDate(user?.createdAt);
+
+  // make api call to backend to log in user
+  const {
+    mutate: logoutMutation,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch("/api/auth/logout", {
+          method: "POST",
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error(error.message);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Logout successful.");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    },
+  });
 
   const handleImgChange = (e, state) => {
     const file = e.target.files[0];
@@ -145,7 +177,9 @@ const ProfilePage = () => {
                 </div>
               </div>
               <div className="flex justify-end px-4 mt-5">
-                {isMyProfile && <EditProfileModal />}
+                {isMyProfile && !coverImg && !profileImg && (
+                  <EditProfileModal />
+                )}
                 {/* {!isMyProfile && (
                   <button
                     className="btn btn-outline rounded-full btn-sm"
@@ -157,9 +191,24 @@ const ProfilePage = () => {
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => alert("Profile updated successfully")}
+                    onClick={async () => {
+                      await updateProfile({ coverImg, profileImg });
+                      setProfileImg(null);
+                      setCoverImg(null);
+                    }}
                   >
-                    Update
+                    {isUpdatingProfile ? "Updating..." : "Update"}
+                  </button>
+                )}
+                {/* Log out button */}
+                {isMyProfile && (
+                  <button
+                    className="btn btn-outline rounded-full btn-sm btn-error px-4 ml-2"
+                    onClick={() => {
+                      logoutMutation();
+                    }}
+                  >
+                    <BiLogOut className="w-5 h-5 cursor-pointer" />
                   </button>
                 )}
               </div>

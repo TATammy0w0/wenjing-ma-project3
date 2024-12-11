@@ -1,54 +1,55 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { BiLogOut } from "react-icons/bi";
-
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 import toast from "react-hot-toast";
 
-const EditProfileModal = () => {
+const EditProfileModal = ({ authUser }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
     email: "",
     bio: "",
-    link: "",
+    //link: "",
     newPassword: "",
     currentPassword: "",
   });
 
+  const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
   const queryClient = useQueryClient();
-
-  // make api call to backend to log in user
-  const {
-    mutate: logoutMutation,
-    isError,
-    error,
-  } = useMutation({
-    mutationFn: async () => {
-      try {
-        const res = await fetch("/api/auth/logout", {
-          method: "POST",
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || "Something went wrong");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error(error.message);
-        throw error;
-      }
-    },
-    onSuccess: () => {
-      toast.success("Logout successful.");
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-    },
-  });
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  useEffect(() => {
+    if (authUser) {
+      setFormData({
+        fullName: authUser.fullName,
+        username: authUser.username,
+        email: authUser.email,
+        bio: authUser.bio,
+        //link: authUser.link,
+        newPassword: "",
+        currentPassword: "",
+      });
+    }
+  }, [authUser]);
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     await updateProfile(formData); // If this fails, the modal won't close
+  //     document.getElementById("edit_profile_modal").close(); // Close modal only on success
+  //   } catch (error) {
+  //     console.error("Error during profile update:", error.message);
+  //     toast.error(error.message || "Failed to update profile."); // Show error toast
+  //   }
+  // };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    updateProfile(formData);
   };
 
   return (
@@ -64,13 +65,7 @@ const EditProfileModal = () => {
       <dialog id="edit_profile_modal" className="modal">
         <div className="modal-box border rounded-md border-gray-700 shadow-md">
           <h3 className="font-bold text-lg my-3">Update Profile</h3>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Profile updated successfully");
-            }}
-          >
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex flex-wrap gap-2">
               <input
                 type="text"
@@ -81,16 +76,6 @@ const EditProfileModal = () => {
                 onChange={handleInputChange}
               />
               <input
-                type="text"
-                placeholder="Username"
-                className="flex-1 input border border-gray-700 rounded p-2 input-md"
-                value={formData.username}
-                name="username"
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <input
                 type="email"
                 placeholder="Email"
                 className="flex-1 input border border-gray-700 rounded p-2 input-md"
@@ -98,6 +83,8 @@ const EditProfileModal = () => {
                 name="email"
                 onChange={handleInputChange}
               />
+            </div>
+            <div className="flex flex-wrap gap-2">
               <textarea
                 placeholder="Bio"
                 className="flex-1 input border border-gray-700 rounded p-2 input-md"
@@ -124,16 +111,16 @@ const EditProfileModal = () => {
                 onChange={handleInputChange}
               />
             </div>
-            <input
+            {/* <input
               type="text"
               placeholder="Link"
               className="flex-1 input border border-gray-700 rounded p-2 input-md"
               value={formData.link}
               name="link"
               onChange={handleInputChange}
-            />
+            /> */}
             <button className="btn btn-primary rounded-full btn-sm text-white">
-              Update
+              {isUpdatingProfile ? "Updating..." : "Update"}
             </button>
           </form>
         </div>
@@ -141,15 +128,6 @@ const EditProfileModal = () => {
           <button className="outline-none">close</button>
         </form>
       </dialog>
-      {/* Log out button - TODO */}
-      <button
-        className="btn btn-outline rounded-full btn-sm btn-error"
-        onClick={() => {
-          logoutMutation();
-        }}
-      >
-        <BiLogOut className="w-5 h-5 cursor-pointer" />
-      </button>
     </div>
   );
 };
