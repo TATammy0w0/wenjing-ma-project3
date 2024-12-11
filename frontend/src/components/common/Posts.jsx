@@ -7,11 +7,11 @@ const Posts = ({ feedType, username }) => {
   const getPostEndPoint = () => {
     switch (feedType) {
       case "all":
-        return "api/posts/all";
+        return "/api/posts/all";
       case "user":
-        return `api/posts/user/${username}`;
+        return `/api/posts/user/${username}`;
       default:
-        return "api/posts/all";
+        return "/api/posts/all";
     }
   };
 

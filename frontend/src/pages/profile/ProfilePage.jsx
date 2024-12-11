@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useQuery } from "@tanstack/react-query";
 
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
 
-import { POSTS } from "../../utils/db/dummy"; // placeholder datas to test out functionalities
-
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { useQuery } from "@tanstack/react-query";
-import { formatMemberSinceDate } from "../../utils/date";
-import toast from "react-hot-toast";
 
+import { formatMemberSinceDate } from "../../utils/date";
 //import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
+
+//import { POSTS } from "../../utils/db/dummy"; // placeholder datas to test out functionalities
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
@@ -49,7 +49,7 @@ const ProfilePage = () => {
     },
   });
 
-  const isMyProfile = true;
+  const isMyProfile = authUser?._id === user?._id;
   const memberSinceDate = formatMemberSinceDate(user?.createdAt);
 
   const handleImgChange = (e, state) => {
