@@ -18,5 +18,5 @@ About 60 hours in total.
 
 ## Extra Credits
 
-- Password Encryption (using JWT)
+- Password Encryption (using bcrypt)
 - Image Status Updates (using Cloudinary)
