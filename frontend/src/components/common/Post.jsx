@@ -2,8 +2,10 @@ import { FaRegComment } from "react-icons/fa";
 import { BiRepost } from "react-icons/bi";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa6";
-import { FaTrash } from "react-icons/fa";
 import { SlOptions } from "react-icons/sl";
+import { MdOutlineCancel } from "react-icons/md";
+import { MdOutlineCheckCircle } from "react-icons/md";
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,12 +16,24 @@ import { formatPostDate } from "../../utils/date";
 
 const Post = ({ post }) => {
   //const [comment, setComment] = useState("");
+  //const [editPost, setEditPost] = useState("");
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
   const queryClient = useQueryClient();
   const postOwner = post.user;
   const isLiked = false;
   const isMyPost = authUser && authUser._id === post.user._id;
   const formattedDate = formatPostDate(post.createdAt);
+
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [updatedText, setUpdatedText] = useState(post.text);
+
+  const [formData, setFormData] = useState({
+    text: "",
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const { mutate: deletePost, isPending: isDeleting } = useMutation({
     mutationFn: async () => {
@@ -46,6 +60,48 @@ const Post = ({ post }) => {
 
   const handleDeletePost = () => {
     deletePost();
+  };
+
+  const { mutate: updatePost, isPending: isUpdatingPost } = useMutation({
+    mutationFn: async (formData) => {
+      try {
+        const res = await fetch(`/api/posts/${post._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+        return data;
+      } catch (error) {
+        toast.error(error.message);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Post edited successfully.");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
+  const handleUpdatePost = () => {
+    e.preventDefault(); //prevent the default form submission behavior
+    updatePost(formData);
+  };
+
+  const handleEditClick = () => {
+    setIsEditingPost(true); // Enable edit mode
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingPost(false); // Exit edit mode
+    setUpdatedText(post.text); // Reset the text
   };
 
   //const isCommenting = false;
@@ -82,7 +138,7 @@ const Post = ({ post }) => {
             {isMyPost && (
               <span className="flex justify-end flex-1">
                 {/* Option to delete or update */}
-                {!isDeleting && (
+                {!isDeleting && !isEditingPost && (
                   <div className="dropdown dropdown-bottom dropdown-end">
                     <div tabIndex={0} role="button" className="m-1">
                       <SlOptions />
@@ -92,7 +148,7 @@ const Post = ({ post }) => {
                       className="dropdown-content menu bg-base-100 rounded-box z-[1] w-30 p-2 shadow"
                     >
                       <li>
-                        <a>Edit</a>
+                        <a onClick={handleEditClick}>Edit</a>
                       </li>
                       <li>
                         <a onClick={handleDeletePost}>Delete</a>
@@ -105,7 +161,33 @@ const Post = ({ post }) => {
             )}
           </div>
           <div className="flex flex-col gap-3 overflow-hidden">
-            <span>{post.text}</span>
+            {!isEditingPost && <span>{post.text}</span>}
+            {isEditingPost && (
+              <form className="flex gap-2" onSubmit={handleUpdatePost}>
+                <textarea
+                  placeholder="Update your post content."
+                  className="flex-1 input border border-gray-700 rounded p-2 input-md"
+                  value={formData.text}
+                  name="text"
+                  onChange={handleInputChange}
+                />
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="submit"
+                    className="btn btn-secondary rounded-full btn-xs text-white"
+                  >
+                    {isUpdatingPost ? "Updating..." : "Update"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary rounded-full btn-xs text-white"
+                    onClick={handleCancelEdit}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
             {post.img && (
               <img
                 src={post.img}
